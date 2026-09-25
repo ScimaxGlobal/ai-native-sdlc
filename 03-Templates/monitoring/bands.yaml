@@ -1,0 +1,85 @@
+# ---------------------------------------------------------------------------
+# bands.yaml — versioned control-band configuration for Stage 6 (Maintain)
+#
+# Place at: monitoring/bands.yaml in the service repo (or a central ops repo).
+# Owner: the service owner for each metric. Changes go through PR review —
+# dismissed anomalies are tuned HERE (wider window, higher tier), not by
+# editing the detector.
+#
+# Read by: monitoring/detect_anomaly.py (--bands monitoring/bands.yaml --metric <name>)
+#          ci/scheduled-anomaly-check.yml
+#
+# Detection is deterministic (rolling mean/std + Western Electric rules).
+# No model is involved in deciding whether something is anomalous; Claude is
+# invoked only AFTER a breach, with the permissions of the breached tier.
+# ---------------------------------------------------------------------------
+version: 1
+
+metrics:
+  ci_test_failure_rate:
+    description: "Share of CI test jobs failing on main, per day"
+    owner: platform-ci
+    unit: ratio
+    source: "prometheus: sum(rate(ci_job_failed_total{branch=\"main\"}[1d])) / sum(rate(ci_job_total{branch=\"main\"}[1d]))"
+    affected_systems: [ci-pipeline, main-branch]
+    baseline:
+      label: rolling_30d        # human label; the detector uses `window` points
+      window: 20                # number of preceding points in the rolling baseline
+      min_std: 0.001            # floor so a flat baseline does not make every change infinite-sigma
+    rules: western_electric     # WE1: 1 pt > 3σ | WE2: 2 of 3 > 2σ | WE3: 4 of 5 > 1σ | WE4: 8 in a row one side
+    lookback: 5                 # only violations ending in the last N points are "active" (trigger a response)
+    tiers:
+      1sigma:
+        action: log             # record it; no agent invocation
+      2sigma:
+        action: diagnose        # read-only diagnosis written as intent.md
+        tools: "Read,Grep,Bash(gh run view *)"
+      3sigma:
+        action: propose         # may act, but only via existing gates
+        tools: "Read,Grep,Edit,Bash(gh run view *),Bash(git checkout -b *),Bash(gh pr create *)"
+        routes: [pull_request, "runbook:rollback-deploy"]
+
+  post_deploy_5xx_rate:
+    description: "HTTP 5xx ratio in the 30 minutes after a production deploy"
+    owner: payments-service
+    unit: ratio
+    source: "prometheus: sum(rate(http_requests_total{code=~\"5..\"}[30m])) / sum(rate(http_requests_total[30m]))"
+    affected_systems: [payments-service, api-gateway]
+    baseline:
+      label: rolling_14d
+      window: 20
+      min_std: 0.0005
+    rules: western_electric
+    lookback: 3
+    tiers:
+      1sigma:
+        action: log
+      2sigma:
+        action: diagnose
+        tools: "Read,Grep"
+      3sigma:
+        action: propose
+        tools: "Read,Grep"
+        routes: ["runbook:rollback-deploy"]   # triggers the existing, rehearsed rollback pipeline
+
+  pr_cycle_time_hours:
+    description: "Median hours from PR open to merge, per day"
+    owner: engineering-leadership
+    unit: hours
+    source: "github api: pulls?state=closed"
+    affected_systems: [code-review]
+    baseline:
+      label: rolling_30d
+      window: 20
+      min_std: 0.1
+    rules: western_electric
+    lookback: 5
+    tiers:
+      1sigma:
+        action: log
+      2sigma:
+        action: diagnose        # report for leadership; no code changes
+        tools: "Read"
+      3sigma:
+        action: diagnose
+        tools: "Read"

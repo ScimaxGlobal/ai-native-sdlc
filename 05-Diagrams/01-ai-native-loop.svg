@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 760" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <title>The AI-Native SDLC loop</title>
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#5b6472"/>
+    </marker>
+  </defs>
+  <rect width="900" height="760" fill="#ffffff"/>
+  <text x="450" y="44" text-anchor="middle" font-size="26" font-weight="700" fill="#1f2937">The AI-Native SDLC Loop</text>
+  <text x="450" y="70" text-anchor="middle" font-size="14" fill="#6b7280">Every stage writes a version-controlled artifact the next stage reads. Production signals feed back as new intent.</text>
+
+  <!-- circle path -->
+  <circle cx="450" cy="410" r="250" fill="none" stroke="#d1d5db" stroke-width="3" stroke-dasharray="6 6"/>
+
+  <!-- arrows between stages (arcs) -->
+  <g fill="none" stroke="#5b6472" stroke-width="2.5" marker-end="url(#arr)">
+    <path d="M520,172 A250,250 0 0 1 645,255"/>
+    <path d="M698,370 A250,250 0 0 1 690,480"/>
+    <path d="M640,575 A250,250 0 0 1 520,650"/>
+    <path d="M380,650 A250,250 0 0 1 258,575"/>
+    <path d="M205,480 A250,250 0 0 1 200,370"/>
+    <path d="M255,255 A250,250 0 0 1 380,172"/>
+  </g>
+
+  <!-- stage nodes -->
+  <g font-size="15">
+    <!-- Plan (top) -->
+    <rect x="360" y="120" width="180" height="84" rx="14" fill="#e0ecff" stroke="#2563eb" stroke-width="2"/>
+    <text x="450" y="150" text-anchor="middle" font-weight="700" fill="#1e3a8a">1 · PLAN</text>
+    <text x="450" y="172" text-anchor="middle" fill="#1f2937">Capture idea as</text>
+    <text x="450" y="192" text-anchor="middle" font-family="Consolas, monospace" fill="#1e3a8a">intent.md</text>
+
+    <!-- Design (upper right) -->
+    <rect x="620" y="250" width="190" height="84" rx="14" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+    <text x="715" y="280" text-anchor="middle" font-weight="700" fill="#4c1d95">2 · DESIGN</text>
+    <text x="715" y="302" text-anchor="middle" fill="#1f2937">Requirements + design,</text>
+    <text x="715" y="322" text-anchor="middle" fill="#1f2937">policy via skills → <tspan font-family="Consolas, monospace" fill="#4c1d95">spec.md</tspan></text>
+
+    <!-- Build (lower right) -->
+    <rect x="620" y="490" width="190" height="84" rx="14" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+    <text x="715" y="520" text-anchor="middle" font-weight="700" fill="#14532d">3 · BUILD</text>
+    <text x="715" y="542" text-anchor="middle" fill="#1f2937">Plan mode first →</text>
+    <text x="715" y="562" text-anchor="middle" font-family="Consolas, monospace" fill="#14532d">plan.md + code</text>
+
+    <!-- Test (bottom) -->
+    <rect x="360" y="620" width="180" height="84" rx="14" fill="#fef9c3" stroke="#ca8a04" stroke-width="2"/>
+    <text x="450" y="650" text-anchor="middle" font-weight="700" fill="#713f12">4 · TEST</text>
+    <text x="450" y="672" text-anchor="middle" fill="#1f2937">Self-verification loops,</text>
+    <text x="450" y="692" text-anchor="middle" fill="#1f2937">continuous evals in CI</text>
+
+    <!-- Deploy (lower left) -->
+    <rect x="90" y="490" width="190" height="84" rx="14" fill="#ffe4e6" stroke="#e11d48" stroke-width="2"/>
+    <text x="185" y="520" text-anchor="middle" font-weight="700" fill="#881337">5 · DEPLOY</text>
+    <text x="185" y="542" text-anchor="middle" fill="#1f2937">Two-way AI review,</text>
+    <text x="185" y="562" text-anchor="middle" fill="#1f2937">hooks as approval gates</text>
+
+    <!-- Maintain (upper left) -->
+    <rect x="90" y="250" width="190" height="84" rx="14" fill="#cffafe" stroke="#0891b2" stroke-width="2"/>
+    <text x="185" y="280" text-anchor="middle" font-weight="700" fill="#164e63">6 · MAINTAIN</text>
+    <text x="185" y="302" text-anchor="middle" fill="#1f2937">Control bands, scans,</text>
+    <text x="185" y="322" text-anchor="middle" fill="#1f2937">on-call → new <tspan font-family="Consolas, monospace" fill="#164e63">intent.md</tspan></text>
+  </g>
+
+  <!-- center -->
+  <circle cx="450" cy="410" r="118" fill="#f9fafb" stroke="#111827" stroke-width="2"/>
+  <text x="450" y="378" text-anchor="middle" font-size="17" font-weight="700" fill="#111827">Human judgment</text>
+  <text x="450" y="400" text-anchor="middle" font-size="17" font-weight="700" fill="#111827">at the gates</text>
+  <text x="450" y="428" text-anchor="middle" font-size="12.5" fill="#374151">PO approves intent &amp; spec</text>
+  <text x="450" y="446" text-anchor="middle" font-size="12.5" fill="#374151">Engineer accepts plan</text>
+  <text x="450" y="464" text-anchor="middle" font-size="12.5" fill="#374151">Code owner approves PR</text>
+  <text x="450" y="482" text-anchor="middle" font-size="12.5" fill="#374151">Named manager releases</text>
+
+  <text x="450" y="745" text-anchor="middle" font-size="12" fill="#9ca3af">"The loop keeps running. Human judgment stays above it."</text>
+</svg>

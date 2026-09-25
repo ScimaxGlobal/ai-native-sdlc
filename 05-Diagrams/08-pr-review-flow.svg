@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 520" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <title>Bi-directional PR review flow</title>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#374151"/></marker>
+    <marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#e11d48"/></marker>
+  </defs>
+  <rect width="1000" height="520" fill="#ffffff"/>
+  <text x="500" y="38" text-anchor="middle" font-size="23" font-weight="700" fill="#1f2937">Bi-Directional Review</text>
+  <text x="500" y="62" text-anchor="middle" font-size="13.5" fill="#6b7280">Claude reviews incoming PRs and fixes comments on its own PRs. Only a human code owner approves.</text>
+
+  <g font-size="13.5">
+    <rect x="30" y="110" width="160" height="70" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+    <text x="110" y="140" text-anchor="middle" font-weight="700" fill="#1e3a8a">PR opened</text>
+    <text x="110" y="160" text-anchor="middle" fill="#374151">(human or agent)</text>
+
+    <rect x="240" y="100" width="210" height="90" rx="10" fill="#fff1f2" stroke="#e11d48" stroke-width="2"/>
+    <text x="345" y="128" text-anchor="middle" font-weight="700" fill="#881337">AI review (REVIEW.md)</text>
+    <text x="345" y="150" text-anchor="middle" fill="#374151">Pass 1 bugs · Pass 2 security</text>
+    <text x="345" y="170" text-anchor="middle" fill="#374151">Pass 3 compliance vs spec/plan</text>
+
+    <rect x="500" y="100" width="200" height="90" rx="10" fill="#fefce8" stroke="#ca8a04" stroke-width="2"/>
+    <text x="600" y="128" text-anchor="middle" font-weight="700" fill="#713f12">Findings</text>
+    <text x="600" y="150" text-anchor="middle" fill="#374151">Important: behavior, data, policy</text>
+    <text x="600" y="170" text-anchor="middle" fill="#374151">≤ 5 nits, rest as a count</text>
+
+    <rect x="750" y="100" width="220" height="90" rx="10" fill="#f3f4f6" stroke="#374151" stroke-width="2"/>
+    <text x="860" y="128" text-anchor="middle" font-weight="700" fill="#111827">Human reviewer</text>
+    <text x="860" y="150" text-anchor="middle" fill="#374151">focuses on intent &amp; risk,</text>
+    <text x="860" y="170" text-anchor="middle" fill="#374151">tags @claude on comments</text>
+
+    <rect x="750" y="270" width="220" height="90" rx="10" fill="#f0fdf4" stroke="#16a34a" stroke-width="2"/>
+    <text x="860" y="298" text-anchor="middle" font-weight="700" fill="#14532d">Claude addresses</text>
+    <text x="860" y="320" text-anchor="middle" fill="#374151">pushes fix, replies in</text>
+    <text x="860" y="340" text-anchor="middle" fill="#374151">thread, re-runs checks</text>
+
+    <rect x="500" y="270" width="200" height="90" rx="10" fill="#ecfeff" stroke="#0891b2" stroke-width="2"/>
+    <text x="600" y="298" text-anchor="middle" font-weight="700" fill="#164e63">Babysit to green</text>
+    <text x="600" y="320" text-anchor="middle" fill="#374151">sweep unresolved</text>
+    <text x="600" y="340" text-anchor="middle" fill="#374151">comments &amp; failing checks</text>
+
+    <rect x="240" y="270" width="210" height="90" rx="10" fill="#111827"/>
+    <text x="345" y="302" text-anchor="middle" font-weight="700" fill="#ffffff">Code-owner approval</text>
+    <text x="345" y="324" text-anchor="middle" fill="#d1d5db">branch protection —</text>
+    <text x="345" y="344" text-anchor="middle" fill="#d1d5db">agent has no approval route</text>
+
+    <rect x="240" y="410" width="210" height="60" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+    <text x="345" y="445" text-anchor="middle" font-weight="700" fill="#14532d">Merge (PR = audit record)</text>
+
+    <rect x="520" y="400" width="450" height="80" rx="10" fill="#f9fafb" stroke="#9ca3af" stroke-dasharray="5 4"/>
+    <text x="745" y="428" text-anchor="middle" font-weight="700" fill="#374151">Learning loop</text>
+    <text x="745" y="450" text-anchor="middle" fill="#374151">Finding seen twice → add to CLAUDE.md</text>
+    <text x="745" y="468" text-anchor="middle" fill="#374151">Monthly: rate findings, tune REVIEW.md</text>
+  </g>
+  <g stroke="#374151" stroke-width="2.2" fill="none" marker-end="url(#a)">
+    <path d="M190,145 L235,145"/>
+    <path d="M450,145 L495,145"/>
+    <path d="M700,145 L745,145"/>
+    <path d="M860,190 L860,265"/>
+    <path d="M750,315 L705,315"/>
+    <path d="M500,315 L455,315"/>
+    <path d="M345,360 L345,405"/>
+    <path d="M860,360 L860,395"/>
+  </g>
+  <text x="870" y="234" font-size="12" fill="#6b7280">@claude</text>
+  <text x="455" y="304" font-size="12" fill="#6b7280">green</text>
+</svg>

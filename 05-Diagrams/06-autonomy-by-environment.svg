@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 470" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <title>Agent autonomy tiered by environment</title>
+  <defs>
+    <linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#16a34a"/><stop offset="0.5" stop-color="#d97706"/><stop offset="1" stop-color="#dc2626"/></linearGradient>
+  </defs>
+  <rect width="960" height="470" fill="#ffffff"/>
+  <text x="480" y="38" text-anchor="middle" font-size="23" font-weight="700" fill="#1f2937">Autonomy Tiered by Environment</text>
+  <text x="480" y="62" text-anchor="middle" font-size="13.5" fill="#6b7280">The agent acts up to the production gate and never past it.</text>
+
+  <rect x="60" y="92" width="840" height="14" rx="7" fill="url(#g)"/>
+  <text x="60" y="126" font-size="12.5" fill="#15803d">more agent autonomy</text>
+  <text x="900" y="126" text-anchor="end" font-size="12.5" fill="#b91c1c">more human control</text>
+
+  <g font-size="13.5">
+    <rect x="60" y="145" width="260" height="250" rx="14" fill="#f0fdf4" stroke="#16a34a" stroke-width="2"/>
+    <text x="190" y="178" text-anchor="middle" font-size="18" font-weight="700" fill="#14532d">Development</text>
+    <text x="80" y="210" fill="#1f2937">• Agent deploys freely</text>
+    <text x="80" y="234" fill="#1f2937">• Sandboxed container</text>
+    <text x="80" y="258" fill="#1f2937">• Short-lived scoped token</text>
+    <text x="80" y="282" fill="#1f2937">• deploy / status / rollback</text>
+    <text x="80" y="300" fill="#1f2937">   exposed as MCP tools</text>
+    <text x="80" y="332" fill="#6b7280" font-size="12.5">Gate: none beyond sandbox</text>
+    <text x="80" y="352" fill="#6b7280" font-size="12.5">and permissions</text>
+
+    <rect x="350" y="145" width="260" height="250" rx="14" fill="#fffbeb" stroke="#d97706" stroke-width="2"/>
+    <text x="480" y="178" text-anchor="middle" font-size="18" font-weight="700" fill="#78350f">Staging</text>
+    <text x="370" y="210" fill="#1f2937">• Agent deploys merged</text>
+    <text x="370" y="228" fill="#1f2937">   builds only</text>
+    <text x="370" y="252" fill="#1f2937">• Rollback rehearsed here</text>
+    <text x="370" y="270" fill="#1f2937">   on a regular cadence</text>
+    <text x="370" y="294" fill="#1f2937">• Smoke tests + evals</text>
+    <text x="370" y="332" fill="#6b7280" font-size="12.5">Gate: branch protection;</text>
+    <text x="370" y="352" fill="#6b7280" font-size="12.5">team-defined checks</text>
+
+    <rect x="640" y="145" width="260" height="250" rx="14" fill="#fef2f2" stroke="#dc2626" stroke-width="2"/>
+    <text x="770" y="178" text-anchor="middle" font-size="18" font-weight="700" fill="#7f1d1d">Production</text>
+    <text x="660" y="210" fill="#1f2937">• Agent prepares release,</text>
+    <text x="660" y="228" fill="#1f2937">   notes, and rollback plan</text>
+    <text x="660" y="252" fill="#1f2937">• No standing prod creds</text>
+    <text x="660" y="276" fill="#1f2937">• PreToolUse hook blocks</text>
+    <text x="660" y="294" fill="#1f2937">   deploy without approval</text>
+    <text x="660" y="332" fill="#6b7280" font-size="12.5">Gate: named manager</text>
+    <text x="660" y="352" fill="#6b7280" font-size="12.5">authorizes release</text>
+  </g>
+  <rect x="60" y="415" width="840" height="36" rx="8" fill="#f3f4f6"/>
+  <text x="480" y="438" text-anchor="middle" font-size="13.5" fill="#374151">Rollback is the most rehearsed path: one command, exercised in staging, available to humans and agent alike.</text>
+</svg>

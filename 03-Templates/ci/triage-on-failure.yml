@@ -1,0 +1,83 @@
+# ---------------------------------------------------------------------------
+# triage-on-failure.yml — read-only CI failure triage (Stage 5, first CI step)
+#
+# Place at: .github/workflows/triage-on-failure.yml
+# Owner: platform engineering.
+#
+# When the "CI" workflow fails, Claude reads the failed-job logs and writes a
+# three-line triage: flaky vs real, likely cause, suggested next step. This is
+# a READ-ONLY judgment step — the safest place to start automating CI:
+# Claude gets only the Read tool, no repo write, no deploy credentials.
+# Output goes to the job summary, an artifact, and (if the run belongs to a
+# PR) a PR comment posted by this workflow — not by Claude.
+#
+# Metric: share of pipeline failures triaged without paging a human.
+# ---------------------------------------------------------------------------
+name: triage-on-failure
+
+on:
+  workflow_run:
+    workflows: ["CI"]            # <-- name of your main CI workflow
+    types: [completed]
+
+permissions:
+  actions: read                  # download logs of the failed run
+  contents: read
+  pull-requests: write           # comment the triage on the PR
+
+jobs:
+  triage:
+    if: github.event.workflow_run.conclusion == 'failure'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RUN_ID: ${{ github.event.workflow_run.id }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install Claude Code
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Collect failed-job logs
+        run: |
+          mkdir -p out
+          # Only the failing steps' logs; trim to the last 3000 lines to bound tokens.
+          gh run view "$RUN_ID" --repo "$GITHUB_REPOSITORY" --log-failed | tail -n 3000 > out/build.log || true
+          wc -l out/build.log
+
+      - name: Triage with Claude (read-only)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          {
+            echo "### CI triage for run $RUN_ID ($(date -u +%Y-%m-%dT%H:%MZ))"
+            claude -p "Read out/build.log. Decide whether this failure is FLAKY (infrastructure, timing, network, non-deterministic test) or REAL (a code change broke something). Reply with exactly three lines: 1) FLAKY or REAL with confidence high/medium/low, 2) the failing test or step and the key error line, 3) the recommended next step. Do not speculate beyond the log." \
+              --allowedTools "Read" \
+              --max-turns 5
+          } >> triage.md
+          cat triage.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Comment on the PR (if any)
+        run: |
+          pr=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID" --jq '.pull_requests[0].number // empty')
+          if [ -n "$pr" ]; then
+            gh pr comment "$pr" --repo "$GITHUB_REPOSITORY" --body-file triage.md
+          else
+            echo "No PR associated with run $RUN_ID; triage is in the job summary."
+          fi
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ci-triage-${{ github.event.workflow_run.id }}
+          path: |
+            triage.md
+            out/build.log
+          retention-days: 14

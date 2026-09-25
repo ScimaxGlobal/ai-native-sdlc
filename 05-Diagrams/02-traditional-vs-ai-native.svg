@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 660" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <title>Traditional SDLC vs AI-native SDLC</title>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#9ca3af"/></marker>
+  </defs>
+  <rect width="1000" height="660" fill="#ffffff"/>
+  <text x="500" y="40" text-anchor="middle" font-size="24" font-weight="700" fill="#1f2937">Traditional vs AI-Native, stage by stage</text>
+
+  <rect x="150" y="62" width="380" height="36" rx="8" fill="#f3f4f6"/>
+  <text x="340" y="86" text-anchor="middle" font-size="15" font-weight="700" fill="#4b5563">TRADITIONAL (linear, human-speed)</text>
+  <rect x="600" y="62" width="380" height="36" rx="8" fill="#1e3a8a"/>
+  <text x="790" y="86" text-anchor="middle" font-size="15" font-weight="700" fill="#ffffff">AI-NATIVE (looped, artifact-driven)</text>
+
+  <g font-size="13.5">
+    <!-- rows: y start 110, height 88 -->
+    <g>
+      <rect x="20" y="110" width="120" height="80" rx="8" fill="#2563eb"/><text x="80" y="156" text-anchor="middle" fill="#fff" font-weight="700" font-size="16">Plan</text>
+      <rect x="150" y="110" width="380" height="80" rx="8" fill="#f9fafb" stroke="#e5e7eb"/>
+      <text x="165" y="143" fill="#374151">Requirements gathered by committee,</text><text x="165" y="163" fill="#374151">written by hand, weeks of cycles</text>
+      <line x1="535" y1="150" x2="595" y2="150" stroke="#9ca3af" stroke-width="2" marker-end="url(#a)"/>
+      <rect x="600" y="110" width="380" height="80" rx="8" fill="#eff6ff" stroke="#bfdbfe"/>
+      <text x="615" y="143" fill="#1f2937">Originator + Claude turn pain points into</text><text x="615" y="163" fill="#1f2937">machine-readable intent.md in hours</text>
+    </g>
+    <g>
+      <rect x="20" y="198" width="120" height="80" rx="8" fill="#7c3aed"/><text x="80" y="244" text-anchor="middle" fill="#fff" font-weight="700" font-size="16">Design</text>
+      <rect x="150" y="198" width="380" height="80" rx="8" fill="#f9fafb" stroke="#e5e7eb"/>
+      <text x="165" y="231" fill="#374151">Separate analyst and designer phases;</text><text x="165" y="251" fill="#374151">policy issues found late in review</text>
+      <line x1="535" y1="238" x2="595" y2="238" stroke="#9ca3af" stroke-width="2" marker-end="url(#a)"/>
+      <rect x="600" y="198" width="380" height="80" rx="8" fill="#f5f3ff" stroke="#ddd6fe"/>
+      <text x="615" y="231" fill="#1f2937">One combined session; standards encoded</text><text x="615" y="251" fill="#1f2937">as skills applied while spec.md is written</text>
+    </g>
+    <g>
+      <rect x="20" y="286" width="120" height="80" rx="8" fill="#16a34a"/><text x="80" y="332" text-anchor="middle" fill="#fff" font-weight="700" font-size="16">Build</text>
+      <rect x="150" y="286" width="380" height="80" rx="8" fill="#f9fafb" stroke="#e5e7eb"/>
+      <text x="165" y="319" fill="#374151">Hand-written code and tests;</text><text x="165" y="339" fill="#374151">documentation written after the fact</text>
+      <line x1="535" y1="326" x2="595" y2="326" stroke="#9ca3af" stroke-width="2" marker-end="url(#a)"/>
+      <rect x="600" y="286" width="380" height="80" rx="8" fill="#f0fdf4" stroke="#bbf7d0"/>
+      <text x="615" y="319" fill="#1f2937">Plan mode → plan.md, then AI-generated code</text><text x="615" y="339" fill="#1f2937">+ tests; knowledge in versioned CLAUDE.md</text>
+    </g>
+    <g>
+      <rect x="20" y="374" width="120" height="80" rx="8" fill="#ca8a04"/><text x="80" y="420" text-anchor="middle" fill="#fff" font-weight="700" font-size="16">Test</text>
+      <rect x="150" y="374" width="380" height="80" rx="8" fill="#f9fafb" stroke="#e5e7eb"/>
+      <text x="165" y="407" fill="#374151">QA gates at stage boundaries</text><text x="165" y="427" fill="#374151">(test after build)</text>
+      <line x1="535" y1="414" x2="595" y2="414" stroke="#9ca3af" stroke-width="2" marker-end="url(#a)"/>
+      <rect x="600" y="374" width="380" height="80" rx="8" fill="#fefce8" stroke="#fef08a"/>
+      <text x="615" y="407" fill="#1f2937">Agent verifies its own work every session;</text><text x="615" y="427" fill="#1f2937">continuous evals gate agent config changes</text>
+    </g>
+    <g>
+      <rect x="20" y="462" width="120" height="80" rx="8" fill="#e11d48"/><text x="80" y="508" text-anchor="middle" fill="#fff" font-weight="700" font-size="16">Deploy</text>
+      <rect x="150" y="462" width="380" height="80" rx="8" fill="#f9fafb" stroke="#e5e7eb"/>
+      <text x="165" y="495" fill="#374151">Line-by-line human review; weekly or</text><text x="165" y="515" fill="#374151">monthly change boards</text>
+      <line x1="535" y1="502" x2="595" y2="502" stroke="#9ca3af" stroke-width="2" marker-end="url(#a)"/>
+      <rect x="600" y="462" width="380" height="80" rx="8" fill="#fff1f2" stroke="#fecdd3"/>
+      <text x="615" y="495" fill="#1f2937">Layered AI review + human approval for risk;</text><text x="615" y="515" fill="#1f2937">governance enforced at the moment of action</text>
+    </g>
+    <g>
+      <rect x="20" y="550" width="120" height="80" rx="8" fill="#0891b2"/><text x="80" y="596" text-anchor="middle" fill="#fff" font-weight="700" font-size="16">Maintain</text>
+      <rect x="150" y="550" width="380" height="80" rx="8" fill="#f9fafb" stroke="#e5e7eb"/>
+      <text x="165" y="583" fill="#374151">Humans watch dashboards;</text><text x="165" y="603" fill="#374151">every ticket waits for a person</text>
+      <line x1="535" y1="590" x2="595" y2="590" stroke="#9ca3af" stroke-width="2" marker-end="url(#a)"/>
+      <rect x="600" y="550" width="380" height="80" rx="8" fill="#ecfeff" stroke="#a5f3fc"/>
+      <text x="615" y="583" fill="#1f2937">Agents watch control bands; a breach writes</text><text x="615" y="603" fill="#1f2937">a new intent.md that restarts the loop</text>
+    </g>
+  </g>
+</svg>

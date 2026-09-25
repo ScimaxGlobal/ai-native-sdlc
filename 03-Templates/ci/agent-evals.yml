@@ -1,0 +1,118 @@
+# ---------------------------------------------------------------------------
+# agent-evals.yml — continuous evals for the agent configuration (Stage 4)
+#
+# Place at: .github/workflows/agent-evals.yml
+# Owner: platform engineering (the team that owns CLAUDE.md / .claude/**).
+#
+# Treat agent configuration like code: any change to CLAUDE.md, skills, hooks,
+# subagents, settings, or the eval suite itself re-runs the suite, and the PR
+# cannot merge below the pass-rate threshold (make this job a required check
+# in branch protection). A nightly run catches drift from model/CLI updates.
+#
+# Requires: repository secret ANTHROPIC_API_KEY (a key with an eval budget),
+#           evals/*.json cases, evals/run-evals.sh, evals/check.sh.
+# ---------------------------------------------------------------------------
+name: agent-evals
+
+on:
+  pull_request:
+    paths:
+      - "CLAUDE.md"
+      - "**/CLAUDE.md"
+      - ".claude/**"
+      - "evals/**"
+  schedule:
+    - cron: "0 2 * * *"          # nightly 02:00 UTC
+  workflow_dispatch:
+    inputs:
+      filter:
+        description: "Regex of eval ids to run (default: all)"
+        required: false
+        default: "."
+
+permissions:
+  contents: read
+
+concurrency:
+  group: agent-evals-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  THRESHOLD: "90"                # minimum pass rate (%) to pass the check
+  EVAL_ISOLATION: worktree       # each case runs in its own git worktree
+
+jobs:
+  evals:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Check out repository (full history so git worktree works)
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node (for the Claude Code CLI)
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Set up Python (eval runner + checks)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Claude Code
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Show versions (recorded with the results)
+        run: |
+          claude --version
+          python --version
+          git log -1 --format='config commit: %H %s'
+
+      - name: Run eval suite
+        id: run
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          EVAL_FILTER: ${{ github.event.inputs.filter || '.' }}
+        run: |
+          chmod +x evals/run-evals.sh evals/check.sh
+          set +e
+          ./evals/run-evals.sh evals | tee evals-output.txt
+          rc=${PIPESTATUS[0]}
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Publish summary
+        if: always()
+        run: |
+          python - <<'PY'
+          import json, os
+          path = "evals/results/summary.json"
+          out = os.environ["GITHUB_STEP_SUMMARY"]
+          if not os.path.exists(path):
+              open(out, "a").write("## Agent evals\n\nNo summary produced — see logs.\n")
+              raise SystemExit(0)
+          s = json.load(open(path))
+          lines = [f"## Agent evals: {s['pass_rate']}% ({s['passed']}/{s['total']}), threshold {s['threshold']}%", "",
+                   "| Case | Result | Seconds |", "|---|---|---|"]
+          lines += [f"| {c['id']} | {'PASS' if c['status']=='pass' else 'FAIL'} | {c['duration_s']} |" for c in s["cases"]]
+          open(out, "a").write("\n".join(lines) + "\n")
+          PY
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-eval-results-${{ github.run_id }}
+          path: |
+            evals/results/
+            evals-output.txt
+          retention-days: 30
+
+      - name: Enforce pass-rate threshold
+        run: |
+          if [ "${{ steps.run.outputs.rc }}" != "0" ]; then
+            echo "::error::Agent eval pass rate below ${THRESHOLD}% (or runner error). See the job summary."
+            exit 1
+          fi

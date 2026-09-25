@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 640" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <title>Leading and lagging metrics by stage</title>
+  <rect width="1040" height="640" fill="#ffffff"/>
+  <text x="520" y="38" text-anchor="middle" font-size="23" font-weight="700" fill="#1f2937">What to Measure at Each Stage</text>
+  <text x="520" y="62" text-anchor="middle" font-size="13.5" fill="#6b7280">Leading indicators move within days and tell you the practice is working. Lagging indicators confirm the outcome.</text>
+
+  <rect x="170" y="82" width="425" height="34" rx="6" fill="#dbeafe"/><text x="382" y="105" text-anchor="middle" font-size="15" font-weight="700" fill="#1e3a8a">LEADING (practice health)</text>
+  <rect x="605" y="82" width="415" height="34" rx="6" fill="#e5e7eb"/><text x="812" y="105" text-anchor="middle" font-size="15" font-weight="700" fill="#111827">LAGGING (outcome)</text>
+
+  <g font-size="13">
+    <rect x="20" y="124" width="140" height="80" rx="8" fill="#2563eb"/><text x="90" y="170" text-anchor="middle" font-size="16" font-weight="700" fill="#fff">Plan</text>
+    <rect x="170" y="124" width="425" height="80" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="185" y="155" fill="#1f2937">Time from first conversation to committed</text><text x="185" y="175" fill="#1f2937">intent.md (target: hours, not weeks)</text>
+    <rect x="605" y="124" width="415" height="80" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="620" y="155" fill="#1f2937">Product-owner acceptance rate; edits to</text><text x="620" y="175" fill="#1f2937">intent.md made after spec.md exists</text>
+
+    <rect x="20" y="210" width="140" height="80" rx="8" fill="#7c3aed"/><text x="90" y="256" text-anchor="middle" font-size="16" font-weight="700" fill="#fff">Design</text>
+    <rect x="170" y="210" width="425" height="80" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="185" y="241" fill="#1f2937">Elapsed time from intent.md commit to</text><text x="185" y="261" fill="#1f2937">spec.md commit</text>
+    <rect x="605" y="210" width="415" height="80" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="620" y="241" fill="#1f2937">Requirements rework: spec.md commits after</text><text x="620" y="261" fill="#1f2937">the first plan.md commit</text>
+
+    <rect x="20" y="296" width="140" height="80" rx="8" fill="#16a34a"/><text x="90" y="342" text-anchor="middle" font-size="16" font-weight="700" fill="#fff">Build</text>
+    <rect x="170" y="296" width="425" height="80" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="185" y="321" fill="#1f2937">Share of changes merged on first implementation</text><text x="185" y="339" fill="#1f2937">pass · repeated mistakes CLAUDE.md should stop</text><text x="185" y="357" fill="#1f2937">· concurrent sessions per engineer</text>
+    <rect x="605" y="296" width="415" height="80" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="620" y="321" fill="#1f2937">Rework cycles per change · diff vs plan.md match</text><text x="620" y="339" fill="#1f2937">· new-joiner time to first merged PR · policy</text><text x="620" y="357" fill="#1f2937">findings in PRs trending to zero</text>
+
+    <rect x="20" y="382" width="140" height="80" rx="8" fill="#ca8a04"/><text x="90" y="428" text-anchor="middle" font-size="16" font-weight="700" fill="#fff">Test</text>
+    <rect x="170" y="382" width="425" height="80" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="185" y="413" fill="#1f2937">First-pass CI success of agent-written changes</text><text x="185" y="433" fill="#1f2937">· eval pass rate · incident → eval lead time</text>
+    <rect x="605" y="382" width="415" height="80" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="620" y="413" fill="#1f2937">Review time per PR · change failure rate ·</text><text x="620" y="433" fill="#1f2937">regressions caught in CI vs in production</text>
+
+    <rect x="20" y="468" width="140" height="80" rx="8" fill="#e11d48"/><text x="90" y="514" text-anchor="middle" font-size="16" font-weight="700" fill="#fff">Deploy</text>
+    <rect x="170" y="468" width="425" height="80" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="185" y="493" fill="#1f2937">Time to first review (minutes) · comments resolved</text><text x="185" y="511" fill="#1f2937">without a human touching the branch · wait per gate</text><text x="185" y="529" fill="#1f2937">· failures triaged without a page</text>
+    <rect x="605" y="468" width="415" height="80" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="620" y="499" fill="#1f2937">Pre-merge defects vs production escapes · gate</text><text x="620" y="519" fill="#1f2937">violations before/after hooks · DORA four keys</text>
+
+    <rect x="20" y="554" width="140" height="80" rx="8" fill="#0891b2"/><text x="90" y="600" text-anchor="middle" font-size="16" font-weight="700" fill="#fff">Maintain</text>
+    <rect x="170" y="554" width="425" height="80" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="185" y="579" fill="#1f2937">Band breach → intent.md in triage queue · repos</text><text x="185" y="597" fill="#1f2937">on a scan schedule · finding → patch in PR</text>
+    <rect x="605" y="554" width="415" height="80" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="620" y="579" fill="#1f2937">Findings that become merged fixes · repeat</text><text x="620" y="597" fill="#1f2937">incidents · scan-found vs externally found vulns</text><text x="620" y="615" fill="#1f2937">· findings per scan trending down</text>
+  </g>
+</svg>

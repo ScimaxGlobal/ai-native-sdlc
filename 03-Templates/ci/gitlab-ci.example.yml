@@ -1,0 +1,101 @@
+# ---------------------------------------------------------------------------
+# gitlab-ci.example.yml — GitLab equivalents of the GitHub workflows
+#
+# Merge into your .gitlab-ci.yml. Owner: platform engineering.
+# Set CI/CD variables (masked, protected): ANTHROPIC_API_KEY, PROMETHEUS_URL.
+# For the MR review / @claude flow on GitLab, see the "Claude Code GitLab CI/CD"
+# docs page; the jobs here cover evals, read-only failure triage and anomaly checks.
+# ---------------------------------------------------------------------------
+
+stages:
+  - test
+  - evals
+  - triage
+  - maintain
+
+variables:
+  THRESHOLD: "90"
+  EVAL_ISOLATION: "worktree"
+  GIT_DEPTH: "0"                 # full history so git worktree works for evals
+
+.claude_base:
+  image: node:22-bookworm
+  before_script:
+    - apt-get update -qq && apt-get install -y -qq python3 python3-pip > /dev/null
+    - ln -sf /usr/bin/python3 /usr/local/bin/python
+    - npm install -g @anthropic-ai/claude-code
+    - claude --version
+
+# --- Your existing test job (placeholder) ---------------------------------
+unit-tests:
+  stage: test
+  image: python:3.12
+  script:
+    - make test 2>&1 | tee build.log
+  artifacts:
+    when: always
+    paths: [build.log]
+    expire_in: 7 days
+
+# --- Continuous evals: on MRs touching agent config, and on schedule -------
+agent-evals:
+  extends: .claude_base
+  stage: evals
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule" && $SCHEDULE_KIND == "nightly-evals"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+        - CLAUDE.md
+        - "**/CLAUDE.md"
+        - .claude/**/*
+        - evals/**/*
+  script:
+    - chmod +x evals/run-evals.sh evals/check.sh
+    - ./evals/run-evals.sh evals      # exits 1 below THRESHOLD -> job fails -> MR blocked
+  artifacts:
+    when: always
+    paths: [evals/results/]
+    expire_in: 30 days
+
+# --- Read-only triage when an earlier stage fails ---------------------------
+triage-on-failure:
+  extends: .claude_base
+  stage: triage
+  when: on_failure
+  needs:
+    - job: unit-tests
+      artifacts: true
+  script:
+    - mkdir -p out && tail -n 3000 build.log > out/build.log || true
+    - |
+      claude -p "Read out/build.log. Say FLAKY or REAL with confidence, the failing step and key error line, and the next step. Exactly three lines." \
+        --allowedTools "Read" --max-turns 5 | tee triage.md
+  artifacts:
+    when: always
+    paths: [triage.md]
+    expire_in: 14 days
+
+# --- Scheduled anomaly check (deterministic detection first) ----------------
+anomaly-check:
+  image: python:3.12
+  stage: maintain
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule" && $SCHEDULE_KIND == "anomaly-check"'
+  variables:
+    METRIC: ci_test_failure_rate
+  script:
+    - pip install -q pyyaml
+    # Replace with your exporter; must produce metric.csv with timestamp,value.
+    - python scripts/export_metric.py --metric "$METRIC" --out metric.csv
+    - set +e; python monitoring/detect_anomaly.py metric.csv --bands monitoring/bands.yaml --metric "$METRIC" --out detection.json --exit-code; tier=$?; set -e
+    - echo "highest active tier = $tier"
+    - |
+      if [ "$tier" -ge 2 ]; then
+        d="work/anomaly-$(date -u +%F)-${METRIC}"; mkdir -p "$d"
+        python monitoring/render_intent.py detection.json --out "$d/intent.md"
+        echo "Intent drafted; a follow-up job (or the Claude GitLab integration) opens the MR for triage."
+      fi
+  artifacts:
+    when: always
+    paths: [metric.csv, detection.json, work/]
+    expire_in: 30 days

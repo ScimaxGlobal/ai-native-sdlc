@@ -1,0 +1,144 @@
+# ---------------------------------------------------------------------------
+# scheduled-anomaly-check.yml — close the loop (Stage 6, Maintain)
+#
+# Place at: .github/workflows/scheduled-anomaly-check.yml
+# Owner: service owner (bands) + platform engineering (workflow).
+#
+# Flow (no person in the path until triage):
+#   1. Pull the metric series as CSV (timestamp,value).
+#   2. Deterministic detection: monitoring/detect_anomaly.py — NO model decides
+#      whether something is anomalous. Exit code = highest active tier (0-3).
+#   3. Tier 0/1: log to the job summary and stop.
+#      Tier 2+:  render an intent.md draft from the evidence, let Claude fill
+#                the Diagnosis section using ONLY the tools the tier allows
+#                (from bands.yaml), and open a PR with the intent for triage.
+#   4. On-call / service owner triages the PR: fix now | schedule | dismiss.
+#      Dismissals are tuned in monitoring/bands.yaml.
+#
+# Requires: secrets ANTHROPIC_API_KEY, PROMETHEUS_URL (or replace step 1).
+# ---------------------------------------------------------------------------
+name: scheduled-anomaly-check
+
+on:
+  schedule:
+    - cron: "15 * * * *"         # hourly, at :15
+  workflow_dispatch:
+
+permissions:
+  contents: write                # push the intent branch
+  pull-requests: write           # open the triage PR
+  actions: read                  # tier-2 diagnosis may read CI runs (gh run view)
+
+env:
+  METRIC: ci_test_failure_rate
+  BANDS: monitoring/bands.yaml
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install detector dependency (optional; detector has a YAML fallback)
+        run: pip install pyyaml
+
+      # --- 1. Fetch metric -------------------------------------------------
+      - name: Export metric from Prometheus to CSV
+        env:
+          PROMETHEUS_URL: ${{ secrets.PROMETHEUS_URL }}
+        run: |
+          python - <<'PY'
+          # Query the last 60 days at 1-day resolution; write timestamp,value CSV.
+          import csv, datetime, json, os, re, sys, time, urllib.parse, urllib.request
+          bands = open(os.environ["BANDS"]).read()
+          # The PromQL lives in bands.yaml under metrics.<METRIC>.source ("prometheus: <query>")
+          block = bands.split(f"  {os.environ['METRIC']}:", 1)[1]
+          m = re.search(r'source:\s*"prometheus:\s*(.*)"\s*$', block, re.M)
+          if not m:
+              sys.exit("no prometheus source for metric in bands.yaml")
+          query = m.group(1).replace('\\"', '"')
+          end = int(time.time()); start = end - 60 * 86400
+          url = os.environ["PROMETHEUS_URL"].rstrip("/") + "/api/v1/query_range?" + urllib.parse.urlencode(
+              {"query": query, "start": start, "end": end, "step": "86400"})
+          data = json.load(urllib.request.urlopen(url, timeout=30))
+          series = data["data"]["result"][0]["values"] if data["data"]["result"] else []
+          with open("metric.csv", "w", newline="") as fh:
+              w = csv.writer(fh); w.writerow(["timestamp", "value"])
+              for ts, val in series:
+                  w.writerow([datetime.datetime.fromtimestamp(float(ts), datetime.timezone.utc).isoformat(), val])
+          print(f"wrote {len(series)} points")
+          PY
+
+      # --- 2. Deterministic detection --------------------------------------
+      - name: Detect (no LLM)
+        id: detect
+        run: |
+          set +e
+          python monitoring/detect_anomaly.py metric.csv --bands "$BANDS" --metric "$METRIC" \
+            --out detection.json --exit-code
+          tier=$?
+          set -e
+          if [ "$tier" -gt 3 ]; then echo "::error::detector failed (exit $tier)"; exit 1; fi
+          echo "tier=$tier" >> "$GITHUB_OUTPUT"
+          echo "tools=$(python -c "import json;print(json.load(open('detection.json'))['response']['tools'] or '')")" >> "$GITHUB_OUTPUT"
+          echo "## $METRIC: highest active tier $tier" >> "$GITHUB_STEP_SUMMARY"
+          python -c "import json;d=json.load(open('detection.json'));[print(f\"- {v['rule']} tier {v['tier']} {v['start_timestamp']} -> {v['end_timestamp']} (peak z {v['peak']['z']})\") for v in d['active_violations']]" >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: detection-${{ github.run_id }}
+          path: |
+            metric.csv
+            detection.json
+
+      # --- 3. Tier 2+: intent draft + read-only diagnosis + triage PR -------
+      - name: Render intent draft
+        if: steps.detect.outputs.tier >= 2
+        id: intent
+        run: |
+          d="work/anomaly-$(date -u +%Y-%m-%d)-${METRIC//_/-}"; f="$d/intent.md"
+          mkdir -p "$d"
+          python monitoring/render_intent.py detection.json --out "$f"
+          echo "file=$f" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/setup-node@v4
+        if: steps.detect.outputs.tier >= 2
+        with:
+          node-version: "22"
+
+      - name: Diagnose with Claude (tools limited by tier)
+        if: steps.detect.outputs.tier >= 2
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GH_TOKEN: ${{ github.token }}
+          TOOLS: ${{ steps.detect.outputs.tools }}
+          INTENT: ${{ steps.intent.outputs.file }}
+        run: |
+          npm install -g @anthropic-ai/claude-code
+          # Claude is stateless here: everything it needs is in detection.json and the draft.
+          claude -p "A deterministic detector found a control-band breach; evidence is in detection.json and the draft intent at $INTENT. Investigate read-only (recent CI runs, recent commits, lessons/ for similar past incidents). Then edit ONLY the '## Diagnosis' section of $INTENT: likely cause, correlated changes with links, confidence, and a recommended triage (fix now / schedule / dismiss). Mark guesses as guesses. Do not change any other file." \
+            --allowedTools "Edit(/$INTENT),${TOOLS:-Read,Grep}" \
+            --max-turns 20
+
+      - name: Open triage PR with the intent
+        if: steps.detect.outputs.tier >= 2
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INTENT: ${{ steps.intent.outputs.file }}
+          TIER: ${{ steps.detect.outputs.tier }}
+        run: |
+          branch="anomaly/${METRIC}-$(date -u +%Y%m%d%H%M)"
+          git config user.name  "anomaly-bot"
+          git config user.email "anomaly-bot@users.noreply.github.com"
+          git checkout -b "$branch"
+          git add "$INTENT"
+          git commit -m "intent: ${METRIC} control-band breach (tier ${TIER})"
+          git push origin "$branch"
+          gh pr create --title "Anomaly: ${METRIC} (tier ${TIER})" \
+            --body "Automated intent from scheduled-anomaly-check. Triage: **fix now / schedule / dismiss**. Dismiss => tune monitoring/bands.yaml. Detection evidence is in the run artifacts." \
+            --label anomaly --head "$branch" || gh pr create --title "Anomaly: ${METRIC} (tier ${TIER})" --body "Automated intent; triage required." --head "$branch"

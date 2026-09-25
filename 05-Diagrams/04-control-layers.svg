@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 600" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <title>Layers of control in an AI-native SDLC</title>
+  <rect width="960" height="600" fill="#ffffff"/>
+  <text x="480" y="40" text-anchor="middle" font-size="24" font-weight="700" fill="#1f2937">Layers of Control</text>
+  <text x="480" y="64" text-anchor="middle" font-size="14" fill="#6b7280">Advisory layers make violations rare. Deterministic layers make must-hold rules impossible to skip.</text>
+
+  <!-- nested layers -->
+  <rect x="40" y="90" width="620" height="480" rx="18" fill="#fef2f2" stroke="#b91c1c" stroke-width="2"/>
+  <text x="60" y="118" font-size="16" font-weight="700" fill="#7f1d1d">Managed settings (org / IT, engineers cannot override)</text>
+  <text x="60" y="140" font-size="13" fill="#7f1d1d">deny rules · sandbox + egress allowlist · managed hooks · org marketplace &amp; MCP</text>
+
+  <rect x="70" y="160" width="560" height="390" rx="16" fill="#fff7ed" stroke="#c2410c" stroke-width="2"/>
+  <text x="90" y="188" font-size="16" font-weight="700" fill="#7c2d12">Branch protection &amp; human approval</text>
+  <text x="90" y="210" font-size="13" fill="#7c2d12">code-owner review · release authorization · agent has no approval route</text>
+
+  <rect x="100" y="230" width="500" height="300" rx="14" fill="#fefce8" stroke="#a16207" stroke-width="2"/>
+  <text x="120" y="258" font-size="16" font-weight="700" fill="#713f12">Hooks (deterministic, per action)</text>
+  <text x="120" y="280" font-size="13" fill="#713f12">PreToolUse gates · protected paths · test-file lock · formatter · secret block</text>
+
+  <rect x="130" y="300" width="440" height="210" rx="12" fill="#f0fdf4" stroke="#15803d" stroke-width="2"/>
+  <text x="150" y="328" font-size="16" font-weight="700" fill="#14532d">Verification &amp; evals</text>
+  <text x="150" y="350" font-size="13" fill="#14532d">build · test · lint · screenshot · eval pass-rate gate</text>
+
+  <rect x="160" y="370" width="380" height="120" rx="10" fill="#eff6ff" stroke="#1d4ed8" stroke-width="2"/>
+  <text x="180" y="398" font-size="16" font-weight="700" fill="#1e3a8a">Context &amp; policy (advisory)</text>
+  <text x="180" y="420" font-size="13" fill="#1e3a8a">CLAUDE.md · skills · REVIEW.md · subagents</text>
+  <text x="180" y="448" font-size="13" fill="#1e3a8a">Shapes what the agent does first time.</text>
+  <text x="180" y="468" font-size="13" fill="#1e3a8a">Can be ignored or mis-triggered.</text>
+
+  <!-- side legend -->
+  <g font-size="13">
+    <rect x="690" y="100" width="240" height="460" rx="14" fill="#f9fafb" stroke="#e5e7eb"/>
+    <text x="810" y="130" text-anchor="middle" font-size="15" font-weight="700" fill="#111827">Rule of thumb</text>
+    <text x="710" y="165" fill="#374151" font-weight="700">Should usually happen?</text>
+    <text x="710" y="185" fill="#374151">→ CLAUDE.md or skill</text>
+    <text x="710" y="220" fill="#374151" font-weight="700">Must always happen?</text>
+    <text x="710" y="240" fill="#374151">→ back the skill with</text>
+    <text x="710" y="258" fill="#374151">   a hook</text>
+    <text x="710" y="293" fill="#374151" font-weight="700">Must hold even if a</text>
+    <text x="710" y="311" fill="#374151" font-weight="700">project misconfigures?</text>
+    <text x="710" y="331" fill="#374151">→ managed settings</text>
+    <text x="710" y="366" fill="#374151" font-weight="700">Needs a person's</text>
+    <text x="710" y="384" fill="#374151" font-weight="700">judgment?</text>
+    <text x="710" y="404" fill="#374151">→ approval gate (hook</text>
+    <text x="710" y="422" fill="#374151">   or branch protection)</text>
+    <line x1="710" y1="450" x2="910" y2="450" stroke="#e5e7eb"/>
+    <rect x="710" y="468" width="16" height="16" fill="#eff6ff" stroke="#1d4ed8"/><text x="734" y="481" fill="#374151">advisory</text>
+    <rect x="710" y="496" width="16" height="16" fill="#fefce8" stroke="#a16207"/><text x="734" y="509" fill="#374151">deterministic</text>
+    <rect x="710" y="524" width="16" height="16" fill="#fef2f2" stroke="#b91c1c"/><text x="734" y="537" fill="#374151">non-overridable</text>
+  </g>
+</svg>

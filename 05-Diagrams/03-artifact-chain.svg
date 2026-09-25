@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 420" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <title>Artifact chain: each stage reads the previous artifact</title>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#374151"/></marker>
+    <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0891b2"/></marker>
+  </defs>
+  <rect width="1100" height="420" fill="#ffffff"/>
+  <text x="550" y="38" text-anchor="middle" font-size="24" font-weight="700" fill="#1f2937">The Artifact Chain</text>
+  <text x="550" y="62" text-anchor="middle" font-size="14" fill="#6b7280">All artifacts live in version control. Each carries author, timestamp, history, and a link to its parent.</text>
+
+  <g font-size="13">
+    <!-- document shapes -->
+    <g transform="translate(30,110)">
+      <path d="M0,0 h130 l30,30 v120 h-160 z" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/><path d="M130,0 v30 h30" fill="none" stroke="#2563eb" stroke-width="2"/>
+      <text x="80" y="58" text-anchor="middle" font-family="Consolas, monospace" font-weight="700" font-size="15" fill="#1e3a8a">intent.md</text>
+      <text x="80" y="84" text-anchor="middle" fill="#374151">problem · outcome</text>
+      <text x="80" y="102" text-anchor="middle" fill="#374151">users · constraints</text>
+      <text x="80" y="120" text-anchor="middle" fill="#374151">open questions</text>
+      <text x="80" y="176" text-anchor="middle" font-size="12" fill="#6b7280">Originator + Claude</text>
+      <text x="80" y="192" text-anchor="middle" font-size="12" fill="#2563eb" font-weight="700">Gate: PO merges</text>
+    </g>
+    <line x1="195" y1="185" x2="238" y2="185" stroke="#374151" stroke-width="2.5" marker-end="url(#a)"/>
+
+    <g transform="translate(245,110)">
+      <path d="M0,0 h130 l30,30 v120 h-160 z" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2"/><path d="M130,0 v30 h30" fill="none" stroke="#7c3aed" stroke-width="2"/>
+      <text x="80" y="58" text-anchor="middle" font-family="Consolas, monospace" font-weight="700" font-size="15" fill="#4c1d95">spec.md</text>
+      <text x="80" y="84" text-anchor="middle" fill="#374151">requirements</text>
+      <text x="80" y="102" text-anchor="middle" fill="#374151">design · flags</text>
+      <text x="80" y="120" text-anchor="middle" fill="#374151">skill versions</text>
+      <text x="80" y="176" text-anchor="middle" font-size="12" fill="#6b7280">PO + Claude + skills</text>
+      <text x="80" y="192" text-anchor="middle" font-size="12" fill="#7c3aed" font-weight="700">Gate: PO signs off</text>
+    </g>
+    <line x1="410" y1="185" x2="453" y2="185" stroke="#374151" stroke-width="2.5" marker-end="url(#a)"/>
+
+    <g transform="translate(460,110)">
+      <path d="M0,0 h130 l30,30 v120 h-160 z" fill="#f0fdf4" stroke="#16a34a" stroke-width="2"/><path d="M130,0 v30 h30" fill="none" stroke="#16a34a" stroke-width="2"/>
+      <text x="80" y="58" text-anchor="middle" font-family="Consolas, monospace" font-weight="700" font-size="15" fill="#14532d">plan.md</text>
+      <text x="80" y="84" text-anchor="middle" fill="#374151">files · order</text>
+      <text x="80" y="102" text-anchor="middle" fill="#374151">risks · proof</text>
+      <text x="80" y="120" text-anchor="middle" fill="#374151">(updated on drift)</text>
+      <text x="80" y="176" text-anchor="middle" font-size="12" fill="#6b7280">Engineer, plan mode</text>
+      <text x="80" y="192" text-anchor="middle" font-size="12" fill="#16a34a" font-weight="700">Gate: plan accepted</text>
+    </g>
+    <line x1="625" y1="185" x2="668" y2="185" stroke="#374151" stroke-width="2.5" marker-end="url(#a)"/>
+
+    <g transform="translate(675,110)">
+      <rect x="0" y="0" width="160" height="150" rx="10" fill="#fefce8" stroke="#ca8a04" stroke-width="2"/>
+      <text x="80" y="40" text-anchor="middle" font-weight="700" font-size="15" fill="#713f12">Code + tests</text>
+      <text x="80" y="66" text-anchor="middle" fill="#374151">verified by build,</text>
+      <text x="80" y="84" text-anchor="middle" fill="#374151">test, lint, screenshot</text>
+      <text x="80" y="112" text-anchor="middle" fill="#374151">evals guard config</text>
+      <text x="80" y="176" text-anchor="middle" font-size="12" fill="#6b7280">Claude + subagents</text>
+      <text x="80" y="192" text-anchor="middle" font-size="12" fill="#ca8a04" font-weight="700">Gate: CI green</text>
+    </g>
+    <line x1="840" y1="185" x2="883" y2="185" stroke="#374151" stroke-width="2.5" marker-end="url(#a)"/>
+
+    <g transform="translate(890,110)">
+      <rect x="0" y="0" width="180" height="150" rx="10" fill="#fff1f2" stroke="#e11d48" stroke-width="2"/>
+      <text x="90" y="40" text-anchor="middle" font-weight="700" font-size="15" fill="#881337">Pull request</text>
+      <text x="90" y="66" text-anchor="middle" fill="#374151">AI review (REVIEW.md)</text>
+      <text x="90" y="84" text-anchor="middle" fill="#374151">findings + fixes</text>
+      <text x="90" y="112" text-anchor="middle" fill="#374151">= audit record</text>
+      <text x="90" y="176" text-anchor="middle" font-size="12" fill="#6b7280">Code owner, release mgr</text>
+      <text x="90" y="192" text-anchor="middle" font-size="12" fill="#e11d48" font-weight="700">Gate: approval + hook</text>
+    </g>
+  </g>
+
+  <!-- feedback -->
+  <path d="M980,320 C980,390 110,390 110,320" fill="none" stroke="#0891b2" stroke-width="2.5" stroke-dasharray="8 5" marker-end="url(#b)"/>
+  <rect x="380" y="352" width="340" height="40" rx="20" fill="#ecfeff" stroke="#0891b2"/>
+  <text x="550" y="377" text-anchor="middle" font-size="14" fill="#164e63" font-weight="700">Production signal / scan / incident → new intent.md</text>
+</svg>

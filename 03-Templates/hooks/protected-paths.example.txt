@@ -1,0 +1,17 @@
+# .claude/protected-paths.txt — read by hooks/protect-paths.sh and protect-paths.ps1
+# One glob per line, relative to the project root. '#' starts a comment.
+# '*' and '**' both match across '/'. A trailing '/' means "everything under this directory".
+# A pattern without '/' also matches the file name at any depth (like .gitignore).
+# Owner: code owners. Changes to this file itself should be protected too.
+
+api/v1/**                 # frozen public API (external partners)
+src/gen/                  # generated code — regenerate, never hand-edit
+build/generated/
+db/migrations/**          # applied migrations are immutable; add a new one instead
+.github/workflows/        # CI changes go through a human-authored PR
+.claude/hooks/            # agents must not edit their own guardrails
+.claude/settings.json
+.claude/protected-paths.txt
+CODEOWNERS
+*.lock
+package-lock.json
